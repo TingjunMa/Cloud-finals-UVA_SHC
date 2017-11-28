@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block page_content %}
+    {% if current_user.is_authenticated %}
+    <h1>Welcome, {{ current_user.username }}!</h1>
+	    {%  if reservation_succeed == 'pending' %}
+	    	<h3>Appointment details</h3>
+	    	<br>
+		    <form action='confirm_schedule' method='POST' role='form'>
+			    {{ wtf.form_field(form.visit_time, readonly=true) }}
+			    {{ wtf.form_field(form.visit_doctor, readonly=true) }}
+			    {{ wtf.form_field(form.visit_reason, placeholder="Max 200 characters") }}
+			    {{ wtf.form_field(form.visit_submit) }}
+		    	{{ wtf.form_field(form.visit_cancel) }}
+		    	{{ wtf.form_field(form.visit_id, hidden=true) }}
+		    </form>
+		{% elif reservation_succeed == 'true' %}
+			<h3>Congratulations, your reservation is successful with {{ doctor }} at {{ time }}. Please check in 15 minutes earlier at the scheduled time. Thanks!</h3>
+			<h4>Back to <a href="{{ url_for('index') }}">main page</a> or <a href="{{ url_for('logout') }}">logout</a></h4>
+		{% elif reservation_succeed == 'false' %}
+			<h3>Sorry, your reservation is not successful due to another existing reservation. Please start a <a href="{{ url_for('index') }}">new</a> reservation!</h3>
+		{% endif %}
+    {% else %}
+    <h1>Welcome, Stranger!</h1>
+    <h4>Please <a href="{{ url_for('register') }}">Register</a> or <a href="{{ url_for('login') }}">Login</a>.</h4>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+    {% if current_user.is_authenticated %}
+    <h1>Welcome, {{ current_user.username }}!</h1>
+    <h3>Your upcoming schedules</h3>
+    	<form name="Cancel_schedule" action="cancel_schedule" method='POST'>
+    	<table class="available-schedules personal-schedules">
+		<tr>
+		    <th></th>
+		    <th>Date</th> 
+		    <th>Time</th>
+		    <th>Doctor</th>
+		</tr>
+    	{% for row in user_schedules %}
+            <tr>
+               <td> <input type="radio" id="{{ row[0] }}" name="cancel_schedule_confirm" value="{{ row[0] }}${{ row[1] }}${{ row[2] }}${{ row[3] }}"> </td>
+               <td> {{ row[1] }} </td>
+               <td> {{ row[2] }} </td>
+               <td> {{ row[3] }} </td>
+            </tr>    
+         	{% endfor %}
+        </table>
+        {% if user_schedules|length != 0 %}
+        	<br>
+        	<button type="submit" class="search-button">Cancel</button>
+        {% endif %}
+        </form>
+    <br>
+    <h3>New reservation</h3>
+    <form name="Confirm_date" action="" method='GET'>
+
+	    <select class="select-date-doctor-dropdown" name="selected_date">
+	  		{% for date in available_date %}
+	    		<option value="{{ date }}" {% if date==selected_date %}selected{% endif %}>{{ date }}</option>
+			{% endfor %}
+		</select>
+
+		<select class="select-date-doctor-dropdown" name="selected_doctor">
+	    	<option value="All doctor" {% if selected_doctor=="All doctor" %}selected{% endif %}>All doctor</option>
+	  		{% for doctor in available_doctor %}
+	    		<option value="{{ doctor }}" {% if doctor==selected_doctor %}selected{% endif %}>{{ doctor }}</option>
+			{% endfor %}
+		</select>
+
+		<button type="submit" class="search-button">Search</button>
+	</form>
+	<br><br>
+	{% if available_schedule %}
+		<form name="Confirm_schedule" action="confirm_schedule" method='POST'>
+			<div  style="overflow:scroll;height:500px;">
+			<table class="available-schedules">
+				<tr>
+				    <th >Date</th> 
+				    <th >Time</th>
+				    <th >Doctor</th>
+				    <th ></th>
+				</tr>
+        		{% for row in available_schedule %}
+	            <tr>
+	               <td > {{ row[1] }} </td>
+	               <td > {{ row[2] }} </td>
+	               <td > <a href="{{ row[4] }}" target="_blank">{{ row[3] }}</a> </td>
+	               <td > <input type="radio" id="{{ row[0] }}" name="choose_one_schedule" value="{{ row[0] }}${{ row[1] }}${{ row[2] }}${{ row[3] }}"> </td>
+	            </tr>    
+	         	{% endfor %}
+      		</table>
+      		</div>
+      		<br>
+      		<button type="submit" class="search-button">Confirm</button>
+      		<br>
+      	</form>
+	{% endif %}
+    {% else %}
+    <h1>Welcome, Stranger!</h1>
+    <h4>Please <a href="{{ url_for('register') }}">Register</a> or <a href="{{ url_for('login') }}">Login</a>.</h4>
+    {% endif %}
+{% endblock %}
